@@ -16,6 +16,12 @@ class datadog_agent::security_agent (
       'enabled' => $enabled,
       'socket' => $socket,
     },
+    'compliance_config' => {
+      'enabled' => $enabled,
+      'host_benchmarks' => {
+        'enabled' => $enabled,
+      }
+    }
   }
 
   if $facts['os']['name'] == 'Windows' {

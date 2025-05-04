@@ -242,6 +242,21 @@
 #   $remote_policies
 #       Boolean to enable or disable Agent remote policies.
 #       Boolean. Default: false
+#   $runtime_security_enabled
+#       Boolean to enable Threat Detection.
+#       Optional Boolean. Default: undef (false)
+#   $compliance_enabled
+#       Boolean to enable CIS benchmarks for Misconfigurations.
+#       Optional Boolean. Default: undef (false)
+#   $sbom_enabled
+#       Boolean to enable hourly evaluation and scanning for vulnerabilities
+#       Optional Boolean. Default: undef (false)
+#   $sbom_container
+#       Boolean to enable Container Vulnerability Management
+#       Optional Boolean. Default: undef (false)
+#   $sbom_host
+#       Boolean to enable Host Vulnerability Management  
+#       Optional Boolean. Default: undef (false)
 #
 # Sample Usage:
 #
@@ -368,6 +383,11 @@ class datadog_agent (
   Boolean $remote_policies = $datadog_agent::params::remote_policies,
   Optional[Enum['host', 'docker', 'all']] $apm_instrumentation_enabled = undef,
   Optional[Array[String]] $apm_instrumentation_libraries = undef,
+  Optional[Boolean] $runtime_security_enabled = undef,
+  Optional[Boolean] $compliance_enabled = undef,
+  Optional[Boolean] $sbom_enabled = undef,
+  Optional[Boolean] $sbom_container = undef,
+  Optional[Boolean] $sbom_host = undef,
 ) inherits datadog_agent::params {
   #In this regex, version '1:6.15.0~rc.1-1' would match as $1='1:', $2='6', $3='15', $4='0', $5='~rc.1', $6='1'
   if $agent_version != 'latest' and $agent_version =~ /([0-9]+:)?([0-9]+)\.([0-9]+)\.([0-9]+)((?:~|-)[^0-9\s-]+[^-\s]*)?(?:-([0-9]+))?/ {
@@ -731,6 +751,47 @@ class datadog_agent (
     $additional_checksd_config = {}
   }
 
+  if $runtime_security_enabled {
+    $runtime_security_config = {
+      'enabled' => true,
+    }
+  } else {
+    $runtime_security_config = {}
+  }
+
+  if $compliance_enabled {
+    $compliance_config = {
+      'enabled' => true,
+      'host_benchmarks' => {
+        'enabled' => true,
+      }
+    }
+  } else {
+    $compliance_config = {}
+  }
+
+  if $sbom_enabled {
+    $sbom_config = {
+    'enabled' => true,
+    }
+    if $sbom_container {
+      $other = {
+        'container_image' => {
+          'enabled' => true,
+        }
+      }
+      $sbom_config = $sbom_config + $other
+    }
+    if $sbom_host {
+      $other = {
+        'host' => {
+          'enabled' => true,
+        }
+      }
+      $sbom_config = $sbom_config + $other
+    }
+  }
+
   $extra_config = deep_merge(
     $base_extra_config,
     $logs_base_config,
@@ -741,7 +802,10 @@ class datadog_agent (
     $apm_filter_tags_regex_config,
     $statsd_forward_config,
     $host_config,
-    $additional_checksd_config
+    $additional_checksd_config,
+    $runtime_security_config,
+    $compliance_config,
+    $sbom_config
   )
 
   file { $_conf_dir:
