@@ -771,28 +771,26 @@ class datadog_agent (
   }
 
   if $sbom_enabled {
-    $sbom_base_config = {
-      'enabled' => true,
-    }
     if $sbom_container {
       $sbom_container_config = {
-        'container_image' => {
           'enabled' => true,
-        }
       }
     } else {
-      $sbom_container_config = {}
+  $sbom_container_config = {}
     }
     if $sbom_host {
       $sbom_host_config = {
-        'host' => {
           'enabled' => true,
-        }
       }
     } else {
       $sbom_host_config = {}
     }
-  $sbom_config = $sbom_base_config + $sbom_container_config + $sbom_host_config
+    $sbom_config = {
+      'enabled' => true,
+      'host' => $sbom_host_config,
+      'container_image' => $sbom_container_config
+    }
+
 
   }
 
