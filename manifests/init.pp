@@ -772,7 +772,7 @@ class datadog_agent (
 
   if $sbom_enabled {
     $sbom_base_config = {
-    'enabled' => true,
+      'enabled' => true,
     }
     if $sbom_container {
       $sbom_container_config = {
@@ -780,6 +780,8 @@ class datadog_agent (
           'enabled' => true,
         }
       }
+    } else {
+      $sbom_container_config = {}
     }
     if $sbom_host {
       $sbom_host_config = {
@@ -787,6 +789,8 @@ class datadog_agent (
           'enabled' => true,
         }
       }
+    } else {
+      $sbom_host_config = {}
     }
   $sbom_config = $sbom_base_config + $sbom_container_config + $sbom_host_config
 
