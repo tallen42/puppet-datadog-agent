@@ -753,7 +753,9 @@ class datadog_agent (
 
   if $runtime_security_enabled {
     $runtime_security_config = {
-      'enabled' => true,
+      'runtime_security_config' => {
+        'enabled' => true,
+      }
     }
   } else {
     $runtime_security_config = {}
@@ -761,10 +763,13 @@ class datadog_agent (
 
   if $compliance_enabled {
     $compliance_config = {
-      'enabled' => true,
-      'host_benchmarks' => {
+      'compliance_config' => {
         'enabled' => true,
+        'host_benchmarks' => {
+          'enabled' => true,
+        }
       }
+
     }
   } else {
     $compliance_config = {}
