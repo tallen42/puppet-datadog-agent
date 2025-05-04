@@ -771,25 +771,25 @@ class datadog_agent (
   }
 
   if $sbom_enabled {
-    $sbom_config = {
+    $sbom_base_config = {
     'enabled' => true,
     }
     if $sbom_container {
-      $other = {
+      $sbom_container_config = {
         'container_image' => {
           'enabled' => true,
         }
       }
-      $sbom_config = $sbom_config + $other
     }
     if $sbom_host {
-      $other = {
+      $sbom_host_config = {
         'host' => {
           'enabled' => true,
         }
       }
-      $sbom_config = $sbom_config + $other
     }
+  $sbom_config = $sbom_base_config + $sbom_container_config + $sbom_host_config
+
   }
 
   $extra_config = deep_merge(
