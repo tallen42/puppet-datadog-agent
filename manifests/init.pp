@@ -776,14 +776,14 @@ class datadog_agent (
           'enabled' => true,
       }
     } else {
-  $sbom_container_config = {}
+      $sbom_container_config = {}
     }
     if $sbom_host {
       $sbom_host_config = {
           'enabled' => true,
       }
     } else {
-      $sbom_host_config => {}
+      $sbom_host_config = {}
     }
     $sbom_config = {
       'sbom' => {
